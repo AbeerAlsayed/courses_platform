@@ -3,8 +3,10 @@
 namespace App\Domains\Auth\Actions;
 
 use App\Domains\Auth\DTOs\RegisterInstructorDTO;
+use App\Domains\Auth\Enums\InstructorStatus;
 use App\Domains\Auth\Models\Instructor;
 use App\Domains\Auth\Models\User;
+use App\Notifications\NewInstructorRegistered;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterInstructorAction
@@ -19,11 +21,15 @@ class RegisterInstructorAction
 
         $user->assignRole('instructor');
 
-        Instructor::create([
+        $instructor = Instructor::create([
             'user_id' => $user->id,
-            'bio' => $data->extra['bio'] ?? 'No bio provided',
-            'status' => $data->extra['status'] ?? 'pending',
+            'bio' => $data->bio,
+            'status' => InstructorStatus::Pending->value,
         ]);
+
+        User::role('admin')->get()->each(function ($admin) use ($instructor) {
+            $admin->notify(new NewInstructorRegistered($instructor));
+        });
 
         return $user;
     }
