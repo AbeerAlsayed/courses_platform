@@ -29,7 +29,6 @@ class User extends Authenticatable
         return $this->hasOne(Instructor::class);
     }
 
-    // علاقة بالطالب
     public function student()
     {
         return $this->hasOne(Student::class);

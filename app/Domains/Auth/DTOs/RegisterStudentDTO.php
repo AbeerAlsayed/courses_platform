@@ -2,21 +2,19 @@
 
 namespace App\Domains\Auth\DTOs;
 
-class RegisterUserDTO
+class RegisterStudentDTO
 {
-    private const ALLOWED_ROLES = ['admin', 'instructor', 'student'];
-
     public string $name;
     public string $email;
     public string $password;
-    public string $role;
+    public string $birthDate;
 
-    public function __construct(string $name, string $email, string $password, string $role = 'student')
+    public function __construct(string $name, string $email, string $password, string $birthDate)
     {
         $this->name = $name;
         $this->email = $email;
         $this->password = $password;
-        $this->role = in_array($role, self::ALLOWED_ROLES) ? $role : 'student';
+        $this->birthDate = $birthDate;
     }
 
     public static function fromArray(array $data): self
@@ -25,7 +23,7 @@ class RegisterUserDTO
             name: $data['name'],
             email: $data['email'],
             password: $data['password'],
-            role: $data['role'] ?? 'student'
+            birthDate: $data['birth_date'] ?? now()->subYears(20)->toDateString()
         );
     }
 }
