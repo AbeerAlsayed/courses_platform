@@ -17,6 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (\Spatie\Permission\Exceptions\UnauthorizedException $e) {
+            throw new \App\Exceptions\UnauthorizedRoleException();
+        });
     })
     ->create();
