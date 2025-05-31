@@ -2,6 +2,7 @@
 
 namespace App\Domains\Auth\Models;
 
+
 use App\Domains\Auth\Enums\InstructorStatus;
 use Illuminate\Database\Eloquent\Model;
 

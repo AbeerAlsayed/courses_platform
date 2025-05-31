@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domains\Cources\DTOs;
+namespace App\Domains\Courses\DTOs;
 
 class CategoryData
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Domains\Cources\Models;
+namespace App\Domains\Courses\Models;
 
-use App\Domains\Cources\Models\Course;
+use App\Domains\Courses\Models\Course;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Domains\Cources\Actions;
+namespace App\Domains\Courses\Actions\Categories;
 
-use App\Domains\Cources\Models\Category;
+use App\Domains\Courses\Models\Category;
 
 class DeleteCategoryAction
 {
