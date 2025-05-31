@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
             $table->foreignId('instructor_id')->constrained('instructors')->cascadeOnDelete(); // إن وجد جدول instructors
-            $table->enum('status', ['draft', 'published'])->default('draft');
+            $table->string('status')->default('pending');
             $table->decimal('price', 8, 2)->default(0);
             $table->integer('duration')->nullable(); // بالدقائق
             $table->timestamps();

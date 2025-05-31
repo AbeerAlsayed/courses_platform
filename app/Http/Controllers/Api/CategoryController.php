@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 
+use App\Domains\Courses\Actions\Categories\CreateCategoryAction;
+use App\Domains\Courses\Actions\Categories\DeleteCategoryAction;
+use App\Domains\Courses\Actions\Categories\UpdateCategoryAction;
+use App\Domains\Courses\DTOs\CategoryData;
+use App\Domains\Courses\Models\Category;
 use App\Http\Controllers\Controller;
-use App\Domains\Cources\Models\Category;
-use App\Domains\Cources\DTOs\CategoryData;
-use App\Domains\Cources\Actions\CreateCategoryAction;
-use App\Domains\Cources\Actions\UpdateCategoryAction;
-use App\Domains\Cources\Actions\DeleteCategoryAction;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;

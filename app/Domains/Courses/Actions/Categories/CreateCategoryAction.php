@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Domains\Cources\Actions;
+namespace App\Domains\Courses\Actions\Categories;
 
-use App\Domains\Cources\Models\Category;
-use App\Domains\Cources\DTOs\CategoryData;
+use App\Domains\Courses\DTOs\CategoryData;
+use App\Domains\Courses\Models\Category;
 
 class CreateCategoryAction
 {
