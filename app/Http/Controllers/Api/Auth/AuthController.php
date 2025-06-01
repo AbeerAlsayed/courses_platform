@@ -55,9 +55,6 @@ class AuthController extends Controller
         return successResponse('User registered successfully', new $resourceClass($user), 201);
     }
 
-
-
-
     public function login(LoginRequest $request)
     {
         try {

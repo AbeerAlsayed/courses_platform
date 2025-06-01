@@ -14,9 +14,9 @@ class UsersTableSeeder extends Seeder
 
     public function run(): void
     {
-        $this->createUserWithRole('admin@example.com', 'Admin User', 'password', 'admin');
-        $this->createUserWithRole('instructor@example.com', 'Instructor User', 'password', 'instructor');
-        $this->createUserWithRole('student@example.com', 'Student User', 'password', 'student');
+        $this->createUserWithRole('admin@gmail.com', 'Admin User', 'password', 'admin');
+        $this->createUserWithRole('instructor@gmail.com', 'Instructor User', 'password', 'instructor');
+        $this->createUserWithRole('student@gmail.com', 'Student User', 'password', 'student');
     }
 
     protected function createUserWithRole(string $email, string $name, string $password, string $role): void
