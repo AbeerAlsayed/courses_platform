@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 
 class RegisterInstructorAction
 {
-    public function execute(RegisterInstructorDTO $data): User
+    public function execute(RegisterInstructorDTO $data)
     {
         $user = User::create([
             'name' => $data->name,
@@ -31,6 +31,6 @@ class RegisterInstructorAction
             $admin->notify(new NewInstructorRegistered($instructor));
         });
 
-        return $user;
+        return $instructor->load('user');
     }
 }

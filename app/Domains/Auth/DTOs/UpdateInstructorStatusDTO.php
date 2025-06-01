@@ -2,7 +2,7 @@
 
 namespace App\Domains\Auth\DTOs;
 
-use App\Domains\Auth\Enums\CourseStatus;
+use App\Domains\Auth\Enums\InstructorStatus;
 use Illuminate\Validation\ValidationException;
 
 class UpdateInstructorStatusDTO
@@ -12,7 +12,7 @@ class UpdateInstructorStatusDTO
 
     public function __construct(int $instructorId, string $status)
     {
-        if (!in_array($status, [CourseStatus::Approved->value, CourseStatus::Rejected->value])) {
+        if (!in_array($status, [InstructorStatus::Approved->value, InstructorStatus::Rejected->value])) {
             throw ValidationException::withMessages([
                 'status' => 'Invalid instructor status.',
             ]);

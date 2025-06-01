@@ -7,6 +7,8 @@ use App\Domains\Auth\Actions\LogoutUserAction;
 use App\Domains\Auth\Actions\RegisterInstructorAction;
 use App\Domains\Auth\Actions\RegisterStudentAction;
 use App\Domains\Auth\DTOs\LoginUserDTO;
+use App\Domains\Auth\Http\Resources\InstructorResource;
+use App\Domains\Auth\Http\Resources\StudentResource;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
@@ -33,6 +35,11 @@ class AuthController extends Controller
             'instructor' => RegisterInstructorAction::class,
         ];
 
+        $roleResourceMap = [
+            'student' => StudentResource::class,
+            'instructor' => InstructorResource::class,
+        ];
+
         if (!array_key_exists($role, $roleActionMap)) {
             abort(403, 'Invalid role.');
         }
@@ -43,8 +50,11 @@ class AuthController extends Controller
         $action = app($roleActionMap[$role]);
         $user = $action->execute($dto);
 
-        return successResponse('User registered successfully', $user, 201);
+
+        $resourceClass = $roleResourceMap[$role];
+        return successResponse('User registered successfully', new $resourceClass($user), 201);
     }
+
 
 
 
@@ -67,18 +77,4 @@ class AuthController extends Controller
         return successResponse('Logged out successfully');
     }
 
-    public function adminDashboard()
-    {
-        return successResponse('Welcome Admin!');
-    }
-
-    public function instructorDashboard()
-    {
-        return successResponse('Welcome Instructor!');
-    }
-
-    public function studentDashboard()
-    {
-        return successResponse('Welcome Student!');
-    }
 }
