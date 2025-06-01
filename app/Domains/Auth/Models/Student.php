@@ -1,14 +1,9 @@
 <?php
 
-// app/Domains/Student/Models/Student.php
-
 namespace App\Domains\Auth\Models;
 
 use App\Domains\Auth\Models\User;
 use Illuminate\Database\Eloquent\Model;
-
-
-
 
 class Student extends Model
 {

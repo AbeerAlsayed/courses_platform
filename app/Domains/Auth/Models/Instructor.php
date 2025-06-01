@@ -4,6 +4,7 @@ namespace App\Domains\Auth\Models;
 
 
 use App\Domains\Auth\Enums\InstructorStatus;
+use App\Domains\Courses\Models\Course;
 use Illuminate\Database\Eloquent\Model;
 
 class Instructor extends Model
@@ -19,5 +20,9 @@ class Instructor extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
     }
 }

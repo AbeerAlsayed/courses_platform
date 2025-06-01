@@ -12,7 +12,7 @@ class CourseData
         public ?int $instructor_id = null,
         public float $price = 0,
         public ?int $duration = null,
-        public ?string $status = null, // يمكن أن تكون null أو قيمة من Enum
+        public ?string $status = null,
     ) {}
 
     public static function fromArray(array $data): self

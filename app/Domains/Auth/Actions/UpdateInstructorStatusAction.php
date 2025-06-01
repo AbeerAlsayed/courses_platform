@@ -16,7 +16,6 @@ class UpdateInstructorStatusAction
             'status' => $dto->status,
         ]);
 
-        // إشعار المدرب
         $instructor->user->notify(new InstructorStatusUpdatedNotification($dto->status));
     }
 }

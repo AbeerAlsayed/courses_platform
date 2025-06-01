@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 
 class RegisterStudentAction
 {
-    public function execute(RegisterStudentDTO $data): User
+    public function execute(RegisterStudentDTO $data)
     {
         $user = User::create([
             'name' => $data->name,
@@ -19,11 +19,11 @@ class RegisterStudentAction
 
         $user->assignRole('student');
 
-        Student::create([
+        $student = Student::create([
             'user_id' => $user->id,
             'birth_date' => $data->extra['birth_date'] ?? now()->subYears(20),
         ]);
 
-        return $user;
+        return $student->load('user');
     }
 }
