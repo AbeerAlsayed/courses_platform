@@ -2,5 +2,5 @@
 
 return [
     App\Providers\AppServiceProvider::class,
-    App\Providers\PolicyRegistrar::class,
+    App\Providers\AuthServiceProvider::class,
 ];

@@ -29,6 +29,9 @@ class Course extends Model implements HasMedia
         return $this->belongsTo(Instructor::class);
     }
 
+    public function sections(){
+        return $this->hasMany(Section::class);
+    }
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('course_image')->singleFile();
