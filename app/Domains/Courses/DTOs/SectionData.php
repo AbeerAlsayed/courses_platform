@@ -2,8 +2,6 @@
 
 namespace App\Domains\Courses\DTOs;
 
-use InvalidArgumentException;
-
 class SectionData
 {
     public function __construct(

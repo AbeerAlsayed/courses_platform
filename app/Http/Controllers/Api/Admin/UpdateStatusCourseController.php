@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Http\Requests\Courses\ApproveCourseRequest;
-use App\Domains\Courses\Models\Course;
-use App\Http\Resources\CourseResource;
 use App\Domains\Courses\Actions\Courses\ChangeCourseStatusAction;
+use App\Domains\Courses\Http\Resources\CourseResource;
+use App\Domains\Courses\Models\Course;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Courses\ApproveCourseRequest;
 
 class UpdateStatusCourseController extends Controller
 {

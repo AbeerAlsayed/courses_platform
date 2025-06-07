@@ -7,11 +7,11 @@ use App\Domains\Courses\Actions\Categories\CreateCategoryAction;
 use App\Domains\Courses\Actions\Categories\DeleteCategoryAction;
 use App\Domains\Courses\Actions\Categories\UpdateCategoryAction;
 use App\Domains\Courses\DTOs\CategoryData;
+use App\Domains\Courses\Http\Resources\CategoryResource;
 use App\Domains\Courses\Models\Category;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
-use App\Http\Resources\CategoryResource;
 
 class CategoryController extends Controller
 {

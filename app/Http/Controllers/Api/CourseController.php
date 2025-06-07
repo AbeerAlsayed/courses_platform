@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Courses\Actions\Courses\CreateCourseAction;
 use App\Domains\Courses\Actions\Courses\DeleteCourseAction;
+use App\Domains\Courses\Actions\Courses\UpdateCourseAction;
+use App\Domains\Courses\DTOs\CourseData;
+use App\Domains\Courses\Http\Resources\CourseResource;
+use App\Domains\Courses\Models\Course;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Courses\StoreCourseRequest;
 use App\Http\Requests\Courses\UpdateCourseRequest;
-use App\Domains\Courses\Models\Course;
-use App\Domains\Courses\DTOs\CourseData;
-use App\Domains\Courses\Actions\Courses\CreateCourseAction;
-use App\Domains\Courses\Actions\Courses\UpdateCourseAction;
-use App\Http\Resources\CourseResource;
 use App\Notifications\CoursePendingApproval;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Notification;

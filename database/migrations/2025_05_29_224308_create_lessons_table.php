@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('lessons', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('section_id')->constrained('sections')->cascadeOnDelete();
+            $table->foreignId('section_id')->constrained()->onDelete('cascade');
             $table->string('title');
-            $table->text('content')->nullable();
-            $table->string('video_url')->nullable();
+            $table->text('description')->nullable();
+            $table->integer('order')->default(0);
             $table->integer('duration')->nullable(); // مدة الفيديو بالدقائق
             $table->boolean('is_free')->default(false); // يمكن للزائر مشاهدة الدرس بدون شراء
             $table->timestamps();

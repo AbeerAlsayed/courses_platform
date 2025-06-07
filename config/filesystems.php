@@ -68,6 +68,7 @@ return [
     | the locations of the links and the values should be their targets.
     |
     */
+    'max_file_size' => 1024 * 1024 * 100,
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
