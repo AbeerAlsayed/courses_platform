@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Domains\Courses\Models\Lesson;
 use App\Domains\Courses\Models\Section;
+use App\Policies\LessonPolicy;
 use App\Policies\SectionPolicy;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -15,5 +17,6 @@ class AuthServiceProvider extends ServiceProvider
     {
         Gate::policy(Course::class, CoursePolicy::class);
         Gate::policy(Section::class, SectionPolicy::class);
+        Gate::policy(Lesson::class, LessonPolicy::class);
     }
 }

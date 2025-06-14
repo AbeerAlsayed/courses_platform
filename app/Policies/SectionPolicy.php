@@ -14,12 +14,6 @@ class SectionPolicy
 
     public function update(User $user, Section $section): bool
     {
-        \Log::info('Current user', [
-            'user_id' => auth()->user()->id,
-            'user_instructor_id' => optional(auth()->user()->instructor)->id,
-            'course_instructor_id' => $section->course->instructor_id,
-        ]);
-
         return $user->hasRole('admin') ||
             $section->course->instructor_id === optional($user->instructor)->id;
     }
