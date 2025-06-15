@@ -3,6 +3,7 @@
 namespace App\Domains\Courses\Models;
 
 use App\Domains\Auth\Models\Instructor;
+use App\Domains\Auth\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -36,4 +37,15 @@ class Course extends Model implements HasMedia
     {
         $this->addMediaCollection('course_image')->singleFile();
     }
+
+    public function students()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'enrollments',
+            'course_id',
+            'user_id'
+        )->withTimestamps();
+    }
+
 }
