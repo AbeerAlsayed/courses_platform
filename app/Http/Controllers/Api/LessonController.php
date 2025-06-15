@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Domains\Courses\Enums\CourseStatus;
 use App\Domains\Courses\Models\Course;
 use App\Http\Controllers\Controller;
 use App\Domains\Courses\Models\Section;
@@ -35,7 +36,7 @@ class LessonController extends Controller
      */
     public function show(Request $request, Section $section, Lesson $lesson)
     {
-        // 1. إذا الدرس مجاني => عرض
+        // 1. إذا الدرس مجاني zz=> عرض
         if ($lesson->is_free) {
             return new LessonResource($lesson);
         }
@@ -68,6 +69,7 @@ class LessonController extends Controller
 
     public function store($courseId, $sectionOrder, StoreLessonRequest $request, CreateLessonAction $action)
     {
+
         $course = Course::findOrFail($courseId);
         $user = auth()->user();
 
@@ -99,7 +101,8 @@ class LessonController extends Controller
      * PUT /courses/{course}/sections/{section}/lessons/{lesson}
      * تعديل درس (فقط لصاحب الكورس).
      */
-    public function update(Section $section, Lesson $lesson, UpdateLessonRequest $request, UpdateLessonAction $action) {
+    public function update(Section $section, Lesson $lesson, UpdateLessonRequest $request, UpdateLessonAction $action)
+    {
         $user = auth()->user();
         if (!$user) {
             return response()->json(['message' => 'Unauthorized.'], 401);
