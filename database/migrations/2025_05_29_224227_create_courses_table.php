@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('status')->default('pending');
             $table->decimal('price', 8, 2)->default(0);
             $table->integer('duration')->nullable(); // بالدقائق
+            $table->string('stripe_price_id')->nullable();
             $table->timestamps();
         });
     }

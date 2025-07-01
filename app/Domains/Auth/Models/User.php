@@ -4,6 +4,7 @@ namespace App\Domains\Auth\Models;
 
 use App\Domains\Courses\Models\Course;
 use App\Domains\Enrollments\Models\Enrollment;
+use App\Domains\Payments\Models\Payment;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -41,14 +42,14 @@ class User extends Authenticatable
         return $this->hasMany(Enrollment::class, 'user_id');
     }
 
-    public function enrolledCourses()
+    public function courses()
     {
-        return $this->belongsToMany(
-            Course::class,
-            'enrollments',
-            'user_id',
-            'course_id'
-        )->withTimestamps();
+        return $this->belongsToMany(Course::class)->withTimestamps()->withPivot('enrolled_at');
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
 
 }

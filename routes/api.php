@@ -8,3 +8,5 @@ require __DIR__ . '/projectRoute/updateStatusCourse.php';
 require __DIR__ . '/projectRoute/sections.php';
 require __DIR__ . '/projectRoute/lessons.php';
 require __DIR__ . '/projectRoute/enrollments.php';
+require __DIR__ . '/projectRoute/payments.php';
+require __DIR__ . '/projectRoute/carts.php';
