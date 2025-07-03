@@ -9,6 +9,7 @@ use App\Domains\Cart\Exceptions\CourseNotInCartException;
 use App\Domains\Courses\Models\Course;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CartItemResource;
+use App\Support\UserIdentifier;
 use Illuminate\Http\Request;
 
 
@@ -16,11 +17,9 @@ class CartController extends Controller
 {
     public function index(CartRepositoryInterface $cart)
     {
-        $id = auth()->check() ? auth()->id() : session()->getId();
+        $id = UserIdentifier::get();
         $courseIds = $cart->get($id);
-
-
-        $courses = Course::whereIn('id', $courseIds)->get();
+        $courses = Course::whereIn('id', $courseIds)->paginate(10);
 
         return CartItemResource::collection($courses);
     }
@@ -31,7 +30,7 @@ class CartController extends Controller
             'course_id' => ['required', 'integer'],
         ]);
 
-        $userId = auth()->check() ? auth()->id() : session()->getId();
+        $userId = UserIdentifier::get();
 
         $course = $action->execute(new AddToCartData(
             userId: $userId,
@@ -46,7 +45,7 @@ class CartController extends Controller
 
     public function destroy(int $courseId, CartRepositoryInterface $cart)
     {
-        $id = auth()->check() ? auth()->id() : session()->getId();
+        $id = UserIdentifier::get();
 
         if (! $cart->has($id, $courseId)) {
             throw new CourseNotInCartException();

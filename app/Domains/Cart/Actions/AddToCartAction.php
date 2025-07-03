@@ -6,6 +6,7 @@ use App\Domains\Cart\DTOs\AddToCartData;
 use App\Domains\Cart\Contracts\CartRepositoryInterface;
 use App\Domains\Cart\Exceptions\CourseAlreadyInCartException;
 use App\Domains\Courses\Models\Course;
+use App\Support\UserIdentifier;
 
 class AddToCartAction
 {
@@ -14,8 +15,7 @@ class AddToCartAction
 
     public function execute(AddToCartData $data): Course
     {
-        $id = auth()->check() ? auth()->id() : session()->getId();
-
+        $id = UserIdentifier::get();
         if ($this->cart->has($id, $data->courseId)) {
             throw new CourseAlreadyInCartException();
         }
