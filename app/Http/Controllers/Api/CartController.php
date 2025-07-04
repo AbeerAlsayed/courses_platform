@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Domains\Cart\Actions\AddToCartAction;
+use App\Domains\Cart\Actions\CalculateCartTotalAction;
+use App\Domains\Cart\Actions\GetCartItemsAction;
 use App\Domains\Cart\Contracts\CartRepositoryInterface;
 use App\Domains\Cart\DTOs\AddToCartData;
 use App\Domains\Cart\Exceptions\CourseNotInCartException;
@@ -15,13 +17,12 @@ use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
-    public function index(CartRepositoryInterface $cart)
+    public function index(GetCartItemsAction $action)
     {
-        $id = UserIdentifier::get();
-        $courseIds = $cart->get($id);
-        $courses = Course::whereIn('id', $courseIds)->paginate(10);
+        $result = $action->execute();
 
-        return CartItemResource::collection($courses);
+        return CartItemResource::collection($result['courses'])
+            ->additional(['total' => $result['total']]);
     }
 
     public function store(Request $request, AddToCartAction $action)
@@ -58,4 +59,5 @@ class CartController extends Controller
             'course_id' => $courseId,
         ]);
     }
+
 }
