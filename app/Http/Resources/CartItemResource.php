@@ -3,6 +3,7 @@
 
 namespace App\Http\Resources;
 
+use App\Support\MoneyFormatter;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CartItemResource extends JsonResource
@@ -13,7 +14,7 @@ class CartItemResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'price' => $this->price,
+            'price' => MoneyFormatter::format($this->price), // أو 'SAR'
             'added_at' => now()->toDateTimeString(),
         ];
     }
