@@ -29,17 +29,9 @@ class StripePaymentService
         }
     }
 
-    public function constructWebhookEvent(string $payload, string $signature): \Stripe\Event
+    public function constructWebhookEvent(string $payload, string $signature)
     {
-        try {
-            return Webhook::constructEvent(
-                $payload,
-                $signature,
-                config('services.stripe.webhook_secret')
-            );
-        } catch (\Exception $e) {
-            Log::error('Stripe Webhook Error: ' . $e->getMessage());
-            throw new \RuntimeException('Webhook verification failed');
-        }
+        $secret = config('services.stripe.webhook_secret'); // whsec_xxx
+        return \Stripe\Webhook::constructEvent($payload, $signature, $secret);
     }
 }

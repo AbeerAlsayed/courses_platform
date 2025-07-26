@@ -29,15 +29,28 @@ class PaymentController extends Controller
                 $course
             );
 
-            return redirect($response->redirectUrl);
+            // بدل redirect، نرسل JSON مع الرابط
+            return response()->json([
+                'success' => true,
+                'redirect_url' => $response->redirectUrl,
+            ]);
 
         } catch (\App\Domains\Payments\Exceptions\InvalidCoursePriceException $e) {
-            return back()->with('error', $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 422);
         } catch (\App\Domains\Payments\Exceptions\CourseAlreadyPurchasedException $e) {
-            return back()->with('error', $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 422);
         } catch (\Exception $e) {
             report($e);
-            return back()->with('error', 'Payment processing failed. Please try again.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment processing failed. Please try again.',
+            ], 500);
         }
     }
 

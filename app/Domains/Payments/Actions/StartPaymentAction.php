@@ -42,6 +42,7 @@ class StartPaymentAction
 
     protected function createPayment(User $student, Course $course): Payment
     {
+
         $paymentData = new PaymentData(
             user_id: $student->id,
             course_id: $course->id,

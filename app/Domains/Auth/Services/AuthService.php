@@ -24,8 +24,7 @@ class AuthService
         // ✅ التحقق من حالة المدرس إن وجد
         if ($user->hasRole('instructor')) {
             $instructor = $user->instructor;
-
-            if ($instructor && $instructor->status !== InstructorStatus::Approved->value) {
+            if ($instructor && $instructor->status !== InstructorStatus::Approved) {
                 throw ValidationException::withMessages([
                     'account' => ['Your instructor account is pending approval.'],
                 ]);
