@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\StripeController;
+use Illuminate\Support\Facades\Route;
+
+Route::post('/checkout', [StripeController::class, 'checkout']);
+
 require __DIR__ . '/projectRoute/auth.php';
 require __DIR__ . '/projectRoute/instructorApproval.php';
 require __DIR__ . '/projectRoute/category.php';

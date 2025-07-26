@@ -2,26 +2,25 @@
 
 namespace App\Domains\Auth\DTOs;
 
+use Illuminate\Http\Request;
+
 class LoginUserDTO
 {
-    public string $email;
-    public string $password;
-
-    public function __construct(string $email, string $password)
-    {
-        $this->email = $email;
-        $this->password = $password;
-    }
+    public function __construct(
+        public string $email,
+        public string $password
+    ) {}
 
     public static function fromArray(array $data): self
     {
-        if (!isset($data['email'], $data['password'])) {
-            throw new \InvalidArgumentException("Missing email or password");
-        }
-
         return new self(
             email: $data['email'],
             password: $data['password']
         );
+    }
+
+    public static function fromRequest(Request $request): self
+    {
+        return self::fromArray($request->validated());
     }
 }

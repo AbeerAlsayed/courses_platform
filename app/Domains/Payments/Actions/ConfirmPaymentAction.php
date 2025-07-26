@@ -3,47 +3,64 @@
 namespace App\Domains\Payments\Actions;
 
 use App\Domains\Payments\Models\Payment;
-use App\Domains\Payments\Enums\PaymentStatus;
+use App\Domains\Payments\Services\StripePaymentService;
 use App\Domains\Enrollments\Actions\CreateEnrollmentAction;
-use Stripe\Stripe;
-use Stripe\Webhook;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
 
 class ConfirmPaymentAction
 {
-    public function handleWebhook(Request $request, CreateEnrollmentAction $enrollAction)
+    public function __construct(
+        private StripePaymentService $stripeService,
+        private CreateEnrollmentAction $enrollAction
+    ) {}
+
+    public function handleWebhook(Request $request): Response
     {
-        Stripe::setApiKey(config('services.stripe.secret'));
-
-        $payload = $request->getContent();
-        $sig_header = $request->header('Stripe-Signature');
-        $endpoint_secret = config('services.stripe.webhook_secret');
-
-        try {
-            $event = Webhook::constructEvent($payload, $sig_header, $endpoint_secret);
-        } catch (\Exception $e) {
-            return response('Webhook error: ' . $e->getMessage(), 400);
-        }
+        $event = $this->verifyWebhookEvent($request);
 
         if ($event->type === 'checkout.session.completed') {
-            $session = $event->data->object;
-
-            $paymentId = $session->metadata->payment_id ?? null;
-            $providerRef = $session->id;
-
-            if ($paymentId) {
-                $payment = Payment::find($paymentId);
-                if ($payment && $payment->status === PaymentStatus::Pending) {
-                    $payment->update([
-                        'status' => PaymentStatus::Success,
-                        'provider_reference' => $providerRef,
-                    ]);
-
-                    $enrollAction->execute($payment->student, $payment->course);
-                }
-            }
+            $this->processCompletedSession($event->data->object);
         }
 
-        return response('Webhook handled', 200);
+        return response('Webhook handled', Response::HTTP_OK);
+    }
+
+    protected function verifyWebhookEvent(Request $request): \Stripe\Event
+    {
+        try {
+            return $this->stripeService->constructWebhookEvent(
+                $request->getContent(),
+                $request->header('Stripe-Signature')
+            );
+        } catch (\Exception $e) {
+            report($e);
+            abort(Response::HTTP_BAD_REQUEST, 'Invalid webhook signature');
+        }
+    }
+
+    protected function processCompletedSession(\Stripe\Checkout\Session $session): void
+    {
+        $payment = $this->getPaymentFromSession($session);
+
+        if ($payment && $payment->isPending()) {
+            $this->completePayment($payment, $session);
+        }
+    }
+
+    protected function getPaymentFromSession(\Stripe\Checkout\Session $session): ?Payment
+    {
+        $paymentId = $session->metadata->payment_id ?? null;
+
+        return $paymentId ? Payment::find($paymentId) : null;
+    }
+
+    protected function completePayment(Payment $payment, \Stripe\Checkout\Session $session): void
+    {
+        DB::transaction(function () use ($payment, $session) {
+            $payment->markAsSucceeded($session->id);
+            $this->enrollAction->execute($payment->user, $payment->course);
+        });
     }
 }

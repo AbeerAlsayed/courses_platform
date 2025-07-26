@@ -4,19 +4,13 @@ namespace App\Domains\Auth\DTOs;
 
 class RegisterInstructorDTO
 {
-    public string $name;
-    public string $email;
-    public string $password;
-    public string $bio;
-    public string $status;
-
-    public function __construct(string $name, string $email, string $password, string $bio, string $status = 'pending')
-    {
-        $this->name = $name;
-        $this->email = $email;
-        $this->password = $password;
-        $this->bio = $bio;
-        $this->status = $status;
+    public function __construct(
+        public string $name,
+        public string $email,
+        public string $password,
+        public string $bio = 'No bio provided',
+        public string $status = 'pending',
+    ) {
     }
 
     public static function fromArray(array $data): self

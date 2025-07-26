@@ -22,6 +22,8 @@ return new class extends Migration
             $table->decimal('price', 8, 2)->default(0);
             $table->integer('duration')->nullable(); // بالدقائق
             $table->string('stripe_price_id')->nullable();
+            $table->string('stripe_product_id')->nullable();
+
             $table->timestamps();
         });
     }

@@ -9,14 +9,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
-    protected $fillable = [
-        'user_id', 'course_id', 'amount',
-        'payment_provider', 'provider_reference', 'status'
-    ];
+    protected $fillable = ['user_id', 'course_id', 'amount', 'payment_provider', 'provider_reference', 'status'];
 
     protected $casts = [
-        'status' => PaymentStatus::class,
-        'amount' => 'decimal:2'
+        'amount' => 'decimal:2',
+        'status' => PaymentStatus::class
     ];
 
     public function user()
@@ -27,5 +24,18 @@ class Payment extends Model
     public function course()
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === PaymentStatus::PENDING;
+    }
+
+    public function markAsSucceeded(string $providerReference): bool
+    {
+        return $this->update([
+            'status' => PaymentStatus::SUCCEEDED,
+            'provider_reference' => $providerReference
+        ]);
     }
 }

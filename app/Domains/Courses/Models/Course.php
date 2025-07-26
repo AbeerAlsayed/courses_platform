@@ -14,7 +14,7 @@ class Course extends Model implements HasMedia
 {
     use InteractsWithMedia;
 
-    protected $fillable = ['title', 'slug', 'description', 'category_id', 'instructor_id', 'status', 'price', 'duration',];
+    protected $fillable = ['title', 'slug', 'description', 'category_id', 'instructor_id', 'status', 'price', 'duration', 'stripe_price_id', 'stripe_product_id',];
 
     protected $casts = [
         'status' => CourseStatus::class,

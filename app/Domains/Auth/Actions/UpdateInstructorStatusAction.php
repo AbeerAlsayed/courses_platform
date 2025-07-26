@@ -13,9 +13,9 @@ class UpdateInstructorStatusAction
         $instructor = Instructor::findOrFail($dto->instructorId);
 
         $instructor->update([
-            'status' => $dto->status,
+            'status' => $dto->status->value,
         ]);
 
-        $instructor->user->notify(new InstructorStatusUpdatedNotification($dto->status));
+        $instructor->user->notify(new InstructorStatusUpdatedNotification($dto->status->value));
     }
 }

@@ -4,8 +4,10 @@ namespace App\Domains\Payments\Enums;
 
 enum PaymentStatus: string
 {
-    case Pending = 'pending';
-    case Success = 'success';
-    case Failed = 'failed';
+    case PENDING = 'pending';
+    case SUCCEEDED = 'succeeded';
+    case FAILED = 'failed';
+    case REFUNDED = 'refunded';
+
 }
 
