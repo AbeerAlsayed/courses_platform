@@ -45,7 +45,11 @@ class ConfirmPaymentAction
         $payment = $this->getPaymentFromSession($session);
 
         if ($payment && $payment->isPending()) {
-            $this->completePayment($payment, $session);
+            DB::transaction(function () use ($payment, $session) {
+                $payment->markAsSucceeded($session->id);
+                // تسجيل المستخدم في الكورس بعد تأكيد الدفع
+                $this->enrollAction->execute($payment->user, $payment->course);
+            });
         }
     }
 
@@ -54,13 +58,5 @@ class ConfirmPaymentAction
         $paymentId = $session->metadata->payment_id ?? null;
 
         return $paymentId ? Payment::find($paymentId) : null;
-    }
-
-    protected function completePayment(Payment $payment, \Stripe\Checkout\Session $session): void
-    {
-        DB::transaction(function () use ($payment, $session) {
-            $payment->markAsSucceeded($session->id);
-            $this->enrollAction->execute($payment->user, $payment->course);
-        });
     }
 }

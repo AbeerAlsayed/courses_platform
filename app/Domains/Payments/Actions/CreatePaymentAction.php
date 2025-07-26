@@ -17,9 +17,9 @@ class CreatePaymentAction
         $this->ensureCourseNotPurchased($data->user_id, $data->course_id);
 
         return DB::transaction(function () use ($data) {
-            $payment = $this->createPaymentRecord($data);
-            $this->createEnrollment($data->user_id, $data->course_id);
-            return $payment;
+            // إنشاء سجل الدفع فقط، بدون تسجيل المستخدم في الكورس
+
+            return $this->createPaymentRecord($data);
         });
     }
 
@@ -44,16 +44,5 @@ class CreatePaymentAction
     protected function createPaymentRecord(PaymentData $data): Payment
     {
         return Payment::create($data->toArray());
-    }
-
-    protected function createEnrollment(int $userId, int $courseId): void
-    {
-        DB::table('course_user')->insert([
-            'user_id' => $userId,
-            'course_id' => $courseId,
-            'enrolled_at' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
     }
 }
