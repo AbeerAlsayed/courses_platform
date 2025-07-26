@@ -58,14 +58,18 @@ class AuthController extends Controller
     public function login(LoginRequest $request)
     {
         try {
-            $dto = LoginUserDTO::fromArray($request->validated());
-            $token = $this->loginUserAction->execute($dto);
+            $dto = LoginUserDTO::fromRequest($request);
+            $result = $this->loginUserAction->execute($dto);
 
-            return successResponse('Login successful', ['token' => $token]);
+            return successResponse('Login successful', [
+                'token' => $result['token'],
+                'user' => $result['user'],
+            ]);
         } catch (ValidationException $e) {
             return errorResponse('Login failed', $e->errors(), 422);
         }
     }
+
 
     public function logout(Request $request)
     {
