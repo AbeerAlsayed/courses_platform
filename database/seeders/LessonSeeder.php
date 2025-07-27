@@ -10,7 +10,7 @@ class LessonSeeder extends Seeder
 {
     public function run(): void
     {
-        $sections = Section::all();
+        $sections = Section::with('course')->get(); // لتحميل الكورس المرتبط بالقسم مسبقًا
 
         if ($sections->isEmpty()) {
             $this->command->warn('No sections found. Please seed sections first.');
@@ -18,7 +18,10 @@ class LessonSeeder extends Seeder
         }
 
         foreach ($sections as $section) {
+            $courseId = $section->course_id;
+
             Lesson::create([
+                'course_id'   => $courseId,
                 'section_id'  => $section->id,
                 'title'       => 'مقدمة عن الدورة',
                 'description' => 'في هذا الدرس نقدم نظرة عامة عن الدورة.',
@@ -28,6 +31,7 @@ class LessonSeeder extends Seeder
             ]);
 
             Lesson::create([
+                'course_id'   => $courseId,
                 'section_id'  => $section->id,
                 'title'       => 'محتوى الدرس الأول',
                 'description' => 'تفاصيل الدرس الأول.',
@@ -37,6 +41,7 @@ class LessonSeeder extends Seeder
             ]);
 
             Lesson::create([
+                'course_id'   => $courseId,
                 'section_id'  => $section->id,
                 'title'       => 'خاتمة القسم',
                 'description' => 'تلخيص لأهم ما ورد في هذا القسم.',

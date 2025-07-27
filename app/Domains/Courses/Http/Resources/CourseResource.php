@@ -16,16 +16,32 @@ class CourseResource extends JsonResource
             'price' => $this->price,
             'duration' => $this->duration,
             'status' => $this->status,
+            'is_enrolled' => $this->when(isset($this->is_enrolled), $this->is_enrolled),
+
             'category' => [
                 'id' => $this->category?->id,
                 'name' => $this->category?->name,
             ],
+
             'instructor' => [
                 'id' => $this->instructor?->id,
                 'name' => $this->instructor?->user?->name,
             ],
+
             'image_url' => $this->getFirstMediaUrl('cover'),
             'created_at' => $this->created_at->toDateTimeString(),
+
+            // عرض الأقسام فقط إن كانت محملة وبها عناصر
+            'sections' => $this->when(
+                $this->relationLoaded('sections') && $this->sections->isNotEmpty(),
+                SectionResource::collection($this->sections)
+            ),
+
+            // عرض الدروس المستقلة فقط إن كانت محملة وبها عناصر
+            'standalone_lessons' => $this->when(
+                $this->relationLoaded('standaloneLessons') && $this->standaloneLessons->isNotEmpty(),
+                LessonResource::collection($this->standaloneLessons)
+            ),
         ];
     }
 }

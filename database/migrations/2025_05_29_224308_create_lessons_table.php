@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('lessons', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('section_id')->constrained()->onDelete('cascade');
+            $table->foreignId('course_id')->constrained()->onDelete('cascade');
+            $table->foreignId('section_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('title');
             $table->text('description')->nullable();
             $table->integer('order')->default(0);
-            $table->integer('duration')->nullable(); // مدة الفيديو بالدقائق
-            $table->boolean('is_free')->default(false); // يمكن للزائر مشاهدة الدرس بدون شراء
+            $table->integer('duration')->nullable();
+            $table->boolean('is_free')->default(false);
             $table->timestamps();
         });
     }

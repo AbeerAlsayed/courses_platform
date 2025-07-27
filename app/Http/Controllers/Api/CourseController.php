@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Domains\Auth\Models\User;
 use App\Domains\Courses\Actions\Courses\CreateCourseAction;
 use App\Domains\Courses\Actions\Courses\DeleteCourseAction;
+use App\Domains\Courses\Actions\Courses\ShowCourseAction;
 use App\Domains\Courses\Actions\Courses\UpdateCourseAction;
 use App\Domains\Courses\DTOs\CourseData;
 use App\Domains\Courses\Http\Resources\CourseResource;
@@ -63,8 +64,10 @@ class CourseController extends Controller
         return successResponse('Course deleted successfully');
     }
 
-    public function show(Course $course)
+    public function show(Course $course, ShowCourseAction $showCourseAction)
     {
+        $course = $showCourseAction->execute($course);
         return successResponse('Course details', new CourseResource($course));
     }
+
 }

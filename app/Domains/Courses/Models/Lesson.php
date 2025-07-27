@@ -10,19 +10,32 @@ class Lesson extends Model implements HasMedia
 {
     use InteractsWithMedia;
 
-    protected $fillable = [
-        'section_id', 'title', 'description', 'order', 'duration', 'is_free',
-    ];
+    protected $fillable = ['course_id', 'section_id', 'title', 'description', 'order', 'duration', 'is_free',];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
 
     public function section()
     {
         return $this->belongsTo(Section::class);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Media
+    |--------------------------------------------------------------------------
+    */
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('lesson_media')->singleFile();
     }
-
-
 }

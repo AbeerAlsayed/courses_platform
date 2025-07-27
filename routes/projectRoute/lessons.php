@@ -14,3 +14,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
+Route::middleware('ensure.user.is.enrolled')->group(function () {
+    Route::get('/courses/{course}/sections/{section}/lessons/{lesson}', [LessonController::class, 'show']);
+});

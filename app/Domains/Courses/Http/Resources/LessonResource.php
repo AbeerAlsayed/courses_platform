@@ -14,8 +14,10 @@ class LessonResource extends JsonResource
             'description' => $this->description,
             'order'       => $this->order,
             'duration'    => $this->duration,
-            'is_free'     => $this->is_free,
-            'media_url'   => $this->getFirstMediaUrl('lesson_media') ?? null,
+            'is_free'     => (bool) $this->is_free,
+            'media_url'   => $this->getFirstMediaUrl('lesson_media'),
+            'section_id'  => $this->section_id,
+            'course_id'   => $this->course_id,
             'created_at'  => $this->created_at->toDateTimeString(),
         ];
     }
