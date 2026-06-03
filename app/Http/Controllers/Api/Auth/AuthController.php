@@ -12,6 +12,7 @@ use App\Domains\Auth\Http\Resources\StudentResource;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -58,12 +59,12 @@ class AuthController extends Controller
     public function login(LoginRequest $request)
     {
         try {
-            $dto = LoginUserDTO::fromRequest($request);
+            $dto = LoginUserDTO::fromArray($request->validated());
             $result = $this->loginUserAction->execute($dto);
 
             return successResponse('Login successful', [
                 'token' => $result['token'],
-                'user' => $result['user'],
+                'user' => new UserResource($result['user']),
             ]);
         } catch (ValidationException $e) {
             return errorResponse('Login failed', $e->errors(), 422);

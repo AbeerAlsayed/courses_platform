@@ -8,14 +8,28 @@ use App\Notifications\InstructorStatusUpdatedNotification;
 
 class UpdateInstructorStatusAction
 {
-    public function execute(UpdateInstructorStatusDTO $dto): void
-    {
-        $instructor = Instructor::findOrFail($dto->instructorId);
+    public function execute(
+        Instructor $instructor,
+        UpdateInstructorStatusDTO $dto
+    ): void {
+
+        if ($instructor->status->isTerminal()) {
+            throw new \DomainException(
+                "Cannot change a terminal instructor status."
+            );
+        }
 
         $instructor->update([
-            'status' => $dto->status->value,
+            'status' => $dto->status,
         ]);
 
-        $instructor->user->notify(new InstructorStatusUpdatedNotification($dto->status->value));
+        $instructor
+            ->loadMissing('user')
+            ->user
+            ->notify(
+                new InstructorStatusUpdatedNotification(
+                    $dto->status
+                )
+            );
     }
 }

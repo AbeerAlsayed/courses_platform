@@ -2,8 +2,8 @@
 
 namespace App\Domains\Auth\Actions;
 
-use App\Domains\Auth\DTOs\LoginUserDTO;
 use App\Domains\Auth\Services\AuthService;
+use App\Domains\Auth\DTOs\LoginUserDTO;
 
 class LoginUserAction
 {

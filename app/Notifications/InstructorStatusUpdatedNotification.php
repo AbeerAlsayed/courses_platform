@@ -6,17 +6,14 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-
+use App\Domains\Auth\Enums\InstructorStatus;
 class InstructorStatusUpdatedNotification extends Notification
 {
 //    use Queueable;
 
-    protected string $status;
-
-    public function __construct(string $status)
-    {
-        $this->status = $status;
-    }
+    public function __construct(
+        protected InstructorStatus $status
+    ) {}
 
     public function via($notifiable)
     {
@@ -25,14 +22,18 @@ class InstructorStatusUpdatedNotification extends Notification
 
     public function toMail($notifiable)
     {
-        $subject = $this->status === 'approved' ? 'Instructor Profile Approved' : 'Instructor Profile Rejected';
-        $line = $this->status === 'approved'
-            ? 'Congratulations! Your instructor profile has been approved.'
-            : 'Unfortunately, your instructor profile has been rejected.';
+        $approved = $this->status === InstructorStatus::Approved;
 
         return (new MailMessage)
-            ->subject($subject)
-            ->line($line);
+            ->subject(
+                $approved
+                    ? 'Instructor Profile Approved'
+                    : 'Instructor Profile Rejected'
+            )
+            ->line(
+                $approved
+                    ? 'Congratulations! Your instructor profile has been approved.'
+                    : 'Unfortunately, your instructor profile has been rejected.'
+            );
     }
-
 }

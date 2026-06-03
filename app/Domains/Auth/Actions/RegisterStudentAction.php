@@ -3,27 +3,24 @@
 namespace App\Domains\Auth\Actions;
 
 use App\Domains\Auth\DTOs\RegisterStudentDTO;
+use App\Domains\Auth\DTOs\CreateUserDTO;
+use App\Domains\Auth\Enums\RegistrationRole;
 use App\Domains\Auth\Models\Student;
-use App\Domains\Auth\Models\User;
-use Illuminate\Support\Facades\Hash;
 
 class RegisterStudentAction
 {
-    public function execute(RegisterStudentDTO $data)
+    public function __construct(
+        protected CreateUserAction $createUserAction
+    ) {}
+
+    public function execute(RegisterStudentDTO $data): Student
     {
-        $user = User::create([
-            'name' => $data->name,
-            'email' => $data->email,
-            'password' => Hash::make($data->password),
-        ]);
-
-        $user->assignRole('student');
-
-        $student = Student::create([
-            'user_id' => $user->id,
-            'birth_date' => $data->extra['birth_date'] ?? now()->subYears(20),
-        ]);
-
-        return $student->load('user');
+        $user = $this->createUserAction->execute(
+            CreateUserDTO::fromRegisterDTO($data, RegistrationRole::Student)
+        );
+        return Student::create([
+            'user_id'    => $user->id,
+            'birth_date' => $data->birthDate,
+        ])->load('user');
     }
 }
