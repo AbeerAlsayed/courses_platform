@@ -1,46 +1,50 @@
 <?php
 
-
 namespace App\Domains\Courses\Actions\Courses;
 
+use App\Domains\Auth\Models\User;
 use App\Domains\Courses\DTOs\CourseData;
 use App\Domains\Courses\Enums\CourseStatus;
 use App\Domains\Courses\Models\Course;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Auth;
-use Stripe\Price;
-use Stripe\Product;
-use Stripe\Stripe;
+use App\Domains\Courses\Services\StripeProductService;
+use RuntimeException;
 
 class CreateCourseAction
 {
-    public function execute(CourseData $data): Course
+    public function __construct(
+        private readonly StripeProductService $stripeService,
+    ) {}
+
+    /**
+     * @param  User  $actor  The authenticated user creating the course
+     */
+    public function execute(CourseData $data, User $actor): Course
     {
-        $createData = $data->toArray();
+        $courseData = $data->toArray();
 
-        if (Auth::user()->hasRole('instructor')) {
-            $createData['status'] = CourseStatus::Pending->value;
+        if ($actor->hasRole('instructor')) {
+
+            if (!$actor->instructor) {
+                throw new RuntimeException(
+                    'Instructor profile not found.'
+                );
+            }
+
+            $courseData['instructor_id'] = $actor->instructor->id;
+            $courseData['status'] = CourseStatus::Pending;
+        } else {
+            $courseData['status'] = CourseStatus::Approved;
+        }
+        if ($data->price > 0) {
+            $stripe = $this->stripeService->createProduct(
+                title:    $data->title,
+                price:    $data->price,
+            );
+
+            $courseData['stripe_product_id'] = $stripe->productId;
+            $courseData['stripe_price_id']   = $stripe->priceId;
         }
 
-        if ($createData['price'] > 0) {
-            Stripe::setApiKey(config('services.stripe.secret'));
-
-            $product = Product::create([
-                'name' => $createData['title'],
-            ]);
-
-            $price = Price::create([
-                'product' => $product->id,
-                'unit_amount' => intval($createData['price'] * 100), // بالسينت
-                'currency' => $createData['currency'] ?? 'usd',
-            ]);
-
-            // أضف السطر التالي لحفظ stripe_product_id
-            $createData['stripe_product_id'] = $product->id;
-            $createData['stripe_price_id'] = $price->id;
-        }
-
-
-        return Course::create($createData);
+        return Course::create($courseData);
     }
 }

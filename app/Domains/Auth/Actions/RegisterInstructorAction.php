@@ -3,34 +3,40 @@
 namespace App\Domains\Auth\Actions;
 
 use App\Domains\Auth\DTOs\RegisterInstructorDTO;
+use App\Domains\Auth\DTOs\CreateUserDTO;
 use App\Domains\Auth\Enums\InstructorStatus;
+use App\Domains\Auth\Enums\RegistrationRole;
 use App\Domains\Auth\Models\Instructor;
 use App\Domains\Auth\Models\User;
 use App\Notifications\NewInstructorRegistered;
-use Illuminate\Support\Facades\Hash;
 
 class RegisterInstructorAction
 {
-    public function execute(RegisterInstructorDTO $data)
-    {
-        $user = User::create([
-            'name' => $data->name,
-            'email' => $data->email,
-            'password' => Hash::make($data->password),
-        ]);
+    public function __construct(
+        protected CreateUserAction $createUserAction
+    ) {}
 
-        $user->assignRole('instructor');
+    public function execute(RegisterInstructorDTO $data): Instructor
+    {
+        $user = $this->createUserAction->execute(
+            CreateUserDTO::fromRegisterDTO($data, RegistrationRole::Instructor)
+        );
 
         $instructor = Instructor::create([
             'user_id' => $user->id,
-            'bio' => $data->bio,
-            'status' => InstructorStatus::Pending->value,
-        ]);
+            'bio'     => $data->bio,
+            'status'  => InstructorStatus::Pending,
+        ])->load('user');
 
-        User::role('admin')->get()->each(function ($admin) use ($instructor) {
-            $admin->notify(new NewInstructorRegistered($instructor));
-        });
+        $this->notifyAdmins($instructor);
 
-        return $instructor->load('user');
+        return $instructor;
+    }
+
+    private function notifyAdmins(Instructor $instructor): void
+    {
+        User::role('admin')
+            ->get()
+            ->each(fn($admin) => $admin->notify(new NewInstructorRegistered($instructor)));
     }
 }

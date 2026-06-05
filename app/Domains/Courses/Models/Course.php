@@ -7,6 +7,9 @@ use App\Domains\Auth\Models\User;
 use App\Domains\Payments\Models\Payment;
 use App\Domains\Courses\Enums\CourseStatus;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -29,61 +32,58 @@ class Course extends Model implements HasMedia
 
     protected $casts = [
         'status' => CourseStatus::class,
-        'price' => 'decimal:2',
+        'price'  => 'decimal:2',
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relationships
-    |--------------------------------------------------------------------------
-    */
+    // -------------------------------------------------------------------------
+    // Relationships
+    // -------------------------------------------------------------------------
 
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function instructor()
+    public function instructor(): BelongsTo
     {
         return $this->belongsTo(Instructor::class);
     }
 
-    public function sections()
+    public function sections(): HasMany
     {
         return $this->hasMany(Section::class)->orderBy('order');
     }
 
-    // جميع الدروس التابعة للكورس (سواء مرتبطة بقسم أم لا)
-    public function lessons()
+    /** All lessons belonging to this course (with or without a section) */
+    public function lessons(): HasMany
     {
         return $this->hasMany(Lesson::class)->orderBy('order');
     }
 
-    // الدروس غير المرتبطة بأي قسم
-    public function standaloneLessons()
+    /** Lessons not attached to any section */
+    public function standaloneLessons(): HasMany
     {
         return $this->hasMany(Lesson::class)
             ->whereNull('section_id')
             ->orderBy('order');
     }
 
-    public function users()
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class)
             ->withTimestamps()
             ->withPivot('enrolled_at');
     }
 
-    public function payments()
+    public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Media
-    |--------------------------------------------------------------------------
-    */
+    // -------------------------------------------------------------------------
+    // Media
+    // -------------------------------------------------------------------------
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('course_image')->singleFile();

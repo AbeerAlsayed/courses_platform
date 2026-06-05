@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('instructor_id')->constrained('instructors')->cascadeOnDelete(); // إن وجد جدول instructors
             $table->string('status')->default('pending');
             $table->decimal('price', 8, 2)->default(0);
-            $table->integer('duration')->nullable(); // بالدقائق
+            $table->integer('duration')->nullable();
             $table->string('stripe_price_id')->nullable();
             $table->string('stripe_product_id')->nullable();
 

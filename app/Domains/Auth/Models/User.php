@@ -2,9 +2,9 @@
 
 namespace App\Domains\Auth\Models;
 
-use App\Domains\Courses\Models\Course;
-use App\Domains\Enrollments\Models\Enrollment;
 use App\Domains\Payments\Models\Payment;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -14,7 +14,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, Notifiable, HasRoles;
 
-    protected $guard_name = 'api';
+    protected string $guard_name = 'api';
 
     protected $fillable = [
         'name',
@@ -27,27 +27,22 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    public function instructor()
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password'          => 'hashed',
+    ];
+
+    public function instructor(): HasOne
     {
         return $this->hasOne(Instructor::class);
     }
 
-    public function student()
+    public function student(): HasOne
     {
         return $this->hasOne(Student::class);
     }
 
-    public function enrollments()
-    {
-        return $this->hasMany(Enrollment::class, 'user_id');
-    }
-
-    public function courses()
-    {
-        return $this->belongsToMany(Course::class)->withTimestamps()->withPivot('enrolled_at');
-    }
-
-    public function payments()
+    public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
     }

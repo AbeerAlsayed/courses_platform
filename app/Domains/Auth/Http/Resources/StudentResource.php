@@ -2,6 +2,7 @@
 
 namespace App\Domains\Auth\Http\Resources;
 
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -11,12 +12,8 @@ class StudentResource extends JsonResource
     {
         return [
             'id'         => $this->id,
-            'birth_date' => $this->birth_date,
-            'user'       => [
-                'id'    => $this->user->id,
-                'name'  => $this->user->name,
-                'email' => $this->user->email,
-            ],
+            'user'       => new UserResource($this->whenLoaded('user')),
+            'birth_date' => $this->birth_date?->toDateString(),
         ];
     }
 }

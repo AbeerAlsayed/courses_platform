@@ -2,72 +2,103 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Domains\Auth\Models\User;
+use App\Domains\Courses\Actions\Courses\ChangeCourseStatusAction;
 use App\Domains\Courses\Actions\Courses\CreateCourseAction;
 use App\Domains\Courses\Actions\Courses\DeleteCourseAction;
+use App\Domains\Courses\Actions\Courses\ListCoursesAction;
 use App\Domains\Courses\Actions\Courses\ShowCourseAction;
 use App\Domains\Courses\Actions\Courses\UpdateCourseAction;
 use App\Domains\Courses\DTOs\CourseData;
-use App\Domains\Courses\Http\Resources\CourseResource;
+use App\Domains\Courses\Enums\CourseStatus;
 use App\Domains\Courses\Models\Course;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Courses\StoreCourseRequest;
+use App\Http\Requests\Courses\ChangeCourseStatusRequest;
+use App\Http\Requests\Courses\CreateCourseRequest;
 use App\Http\Requests\Courses\UpdateCourseRequest;
-use App\Notifications\CoursePendingApproval;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\Notification;
 
 class CourseController extends Controller
 {
     use AuthorizesRequests;
-    public function index()
+    public function __construct(
+        private readonly CreateCourseAction      $createCourseAction,
+        private readonly UpdateCourseAction      $updateCourseAction,
+        private readonly DeleteCourseAction      $deleteCourseAction,
+        private readonly ShowCourseAction        $showCourseAction,
+        private readonly ChangeCourseStatusAction $changeCourseStatusAction,
+        private readonly ListCoursesAction $listCoursesAction,
+
+    ) {}
+
+    public function index(): JsonResponse
     {
-        $courses = Course::paginate(10);
-        return successResponse('My Courses', CourseResource::collection($courses));
+        $courses = $this->listCoursesAction->execute();
+
+        return successResponse(
+            'Courses retrieved successfully.',
+            $courses
+        );
+    }
+    public function store(CreateCourseRequest $request): JsonResponse
+    {
+        $this->authorize('create', Course::class);
+
+        $course = $this->createCourseAction->execute(
+            data:  CourseData::fromArray($request->validated()),
+            actor: $request->user(),              // ✅ Injected — no Auth facade
+        );
+
+        return successResponse('Course created successfully.', $course, 201);
     }
 
-    public function store(StoreCourseRequest $request, CreateCourseAction $createCourseAction)
-    {
-        $dto = CourseData::fromArray($request->validated() + ['instructor_id' => auth()->user()->instructor->id]);
-        $course = $createCourseAction->execute($dto);
-
-        if ($request->hasFile('image')) {
-            $course->addMediaFromRequest('image')->toMediaCollection('cover');
-        }
-
-        $admins = User::role('admin')->get();
-        Notification::send($admins, new CoursePendingApproval($course));
-
-        return successResponse('Course submitted for review', new CourseResource($course));
-    }
-
-    public function update(UpdateCourseRequest $request, Course $course, UpdateCourseAction $updateCourseAction)
-    {
-        $this->authorize('update', $course);
-
-        $dto = CourseData::fromArray($request->validated());
-        $course = $updateCourseAction->execute($course, $dto);
-
-        if ($request->hasFile('image')) {
-            $course->addMediaFromRequest('image')->toMediaCollection('cover');
-        }
-
-        return successResponse('Course updated successfully', new CourseResource($course));
-    }
-
-    public function destroy(Course $course, DeleteCourseAction $deleteCourseAction)
+    public function update(UpdateCourseRequest $request, Course $course): JsonResponse
     {
         $this->authorize('update', $course);
 
-        $deleteCourseAction->execute($course);
+        $updated = $this->updateCourseAction->execute(
+            course: $course,
+            data:   CourseData::fromArray($request->validated()),
+            actor:  $request->user(),
+        );
 
-        return successResponse('Course deleted successfully');
+        return successResponse('Course updated successfully.', $updated);
     }
 
-    public function show(Course $course, ShowCourseAction $showCourseAction)
+    public function destroy(Course $course): JsonResponse
     {
-        $course = $showCourseAction->execute($course);
-        return successResponse('Course details', new CourseResource($course));
+        $this->authorize('delete', $course);
+
+        $this->deleteCourseAction->execute($course);
+
+        return successResponse('Course deleted successfully.');
     }
 
+    public function show(Request $request, Course $course): JsonResponse
+    {
+        $this->authorize('view', $course);
+
+        $result = $this->showCourseAction->execute(
+            course: $course,
+            user:   $request->user(),   // nullable — guests return only free lessons
+        );
+
+        return successResponse('Course retrieved.', [
+            'course'      => $result->course,
+            'is_enrolled' => $result->isEnrolled,
+        ]);
+    }
+
+    public function changeStatus(ChangeCourseStatusRequest $request, Course $course): JsonResponse
+    {
+        $this->authorize('changeStatus', $course);
+
+        $updated = $this->changeCourseStatusAction->execute(
+            course: $course,
+            status: CourseStatus::from($request->validated('status')),  // ✅ Typed enum
+        );
+
+        return successResponse('Course status updated.', $updated);
+    }
 }

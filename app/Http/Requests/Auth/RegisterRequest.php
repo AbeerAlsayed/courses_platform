@@ -27,7 +27,7 @@ class RegisterRequest extends FormRequest
             'name'       => ['required', 'string', 'max:255'],
             'email'      => ['required', 'email', 'unique:users,email'],
             'password'   => ['required', 'string', 'min:4', 'confirmed'],
-            'birth_date' => ['required', 'date'],
+            'birth_date' => ['required', 'date', 'before:today', 'after:' . now()->subYears(100)->toDateString()],
             'role'       => ['required', 'in:student'],
         ];
     }

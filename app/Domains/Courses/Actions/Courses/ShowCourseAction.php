@@ -1,33 +1,28 @@
 <?php
 
-
 namespace App\Domains\Courses\Actions\Courses;
-use App\Domains\Courses\Enums\CourseStatus;
+
+use App\Domains\Auth\Models\User;
+use App\Domains\Courses\DTOs\CourseShowResult;
 use App\Domains\Courses\Models\Course;
-use App\Notifications\CourseStatusChangedNotification;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
 
 class ShowCourseAction
 {
-    public function execute(Course $course): Course
+    public function execute(Course $course, ?User $user): CourseShowResult
     {
-        $user = Auth::user();
+        $isEnrolled = $user
+            ? $course->users()->where('user_id', $user->id)->exists()
+            : false;
 
-        $isEnrolled = $course->users()
-            ->where('user_id', optional($user)->id)
-            ->exists();
-
-        // تحميل الأقسام مع الدروس (إن كان المستخدم مشتركاً أو الدروس مجانية)
         $course->load([
             'sections.lessons' => function ($query) use ($isEnrolled) {
-                if (!$isEnrolled) {
+                if (! $isEnrolled) {
                     $query->where('is_free', true);
                 }
                 $query->orderBy('order');
             },
             'standaloneLessons' => function ($query) use ($isEnrolled) {
-                if (!$isEnrolled) {
+                if (! $isEnrolled) {
                     $query->where('is_free', true);
                 }
                 $query->orderBy('order');
@@ -36,9 +31,6 @@ class ShowCourseAction
             'instructor.user',
         ]);
 
-        // سنضيف الخاصية للإرجاع لاحقًا من الـ Resource
-        $course->is_enrolled = $isEnrolled;
-
-        return $course;
+        return new CourseShowResult(course: $course, isEnrolled: $isEnrolled);
     }
 }

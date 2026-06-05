@@ -1,4 +1,5 @@
 <?php
+// app/Http/Requests/Course/UpdateCourseRequest.php
 
 namespace App\Http\Requests\Courses;
 
@@ -6,30 +7,24 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateCourseRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return true;
+        return true; // Handled by Policy
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
+        $courseId = $this->route('course')?->id;
+
         return [
-            'title' => 'required|string|max:255',
-            'slug' => 'required|string|unique:courses,slug,' . $this->course->id,
-            'description' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'duration' => 'nullable|integer|min:1',
-            'image' => 'nullable|image',
+            'title'         => ['sometimes', 'string', 'max:255'],
+            'slug'          => ['sometimes', 'string', 'max:255', 'regex:/^[a-z0-9-]+$/',
+                "unique:courses,slug,{$courseId}"],
+            'description'   => ['nullable', 'string', 'max:5000'],
+            'category_id'   => ['sometimes', 'integer', 'exists:categories,id'],
+            'price'         => ['sometimes', 'numeric', 'min:0', 'max:99999.99'],
+            'currency'      => ['nullable', 'string', 'size:3'],
+            'duration'      => ['nullable', 'integer', 'min:1'],
         ];
     }
 }
-

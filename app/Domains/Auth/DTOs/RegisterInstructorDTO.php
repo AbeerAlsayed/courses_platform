@@ -8,10 +8,8 @@ class RegisterInstructorDTO
         public string $name,
         public string $email,
         public string $password,
-        public string $bio = 'No bio provided',
-        public string $status = 'pending',
-    ) {
-    }
+        public readonly ?string $bio,
+    ) {}
 
     public static function fromArray(array $data): self
     {
@@ -19,8 +17,7 @@ class RegisterInstructorDTO
             name: $data['name'],
             email: $data['email'],
             password: $data['password'],
-            bio: $data['bio'] ?? 'No bio provided',
-            status: $data['status'] ?? 'pending',
+            bio:      $data['bio'] ?? null,
         );
     }
 }
